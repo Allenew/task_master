@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
 import './Auth.css';
 
 const LoginPage = () => {
@@ -21,9 +22,11 @@ const LoginPage = () => {
       
       const response = await api.post('/token', formData);
       login(response.data.access_token);
+      toast.success('Successfully logged in!');
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to login');
+      toast.error(err.response?.data?.detail || 'Failed to login');
     }
   };
 

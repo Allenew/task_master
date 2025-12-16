@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import TaskTablePage from './pages/TaskTablePage';
 import TaskCreatePage from './pages/TaskCreatePage';
 import TaskDetailPage from './pages/TaskDetailPage';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ function App() {
       <AuthProvider>
         <Router>
           <AppRoutes />
+          <Toaster position="bottom-center" />
         </Router>
       </AuthProvider>
     </QueryClientProvider>

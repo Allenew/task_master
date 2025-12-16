@@ -3,7 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { Plus, Eye, Edit, Trash2, Filter } from 'lucide-react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 import './TaskTablePage.css';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 interface Task {
   id: number;
@@ -14,16 +21,26 @@ interface Task {
 }
 
 const TaskTablePage = () => {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [filterStatus, setFilterStatus] = useState<string>('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: tasks, isLoading } = useQuery<Task[]>({
+  const {
+    data: tasks,
+    isLoading: tasksLoading,
+    isError: tasksError,
+    error: tasksErrorObj
+  } = useQuery<Task[]>({
     queryKey: ['tasks', filterStatus],
     queryFn: async () => {
       const params = filterStatus ? { status: filterStatus } : {};
       const response = await api.get('/tasks/', { params });
       return response.data;
-    }
+    },
+    enabled: isAuthenticated && !authLoading,
+    retry: false,
   });
 
   const deleteMutation = useMutation({
@@ -32,16 +49,33 @@ const TaskTablePage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast.success('Task deleted successfully');
+    },
+    onError: () => {
+      toast.error('Failed to delete task');
     }
   });
 
   const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      deleteMutation.mutate(id);
-    }
+    setDeleteId(id);
+    setConfirmOpen(true);
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  const handleConfirmDelete = () => {
+    if (deleteId !== null) {
+      deleteMutation.mutate(deleteId);
+    }
+    setConfirmOpen(false);
+    setDeleteId(null);
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setDeleteId(null);
+  };
+
+  if (authLoading || tasksLoading) return <div>Loading...</div>;
+  if (tasksError) return <div className="error-message">{(tasksErrorObj as any)?.response?.data?.detail || 'Failed to load tasks.'}</div>;
 
   return (
     <div className="task-table-container">
@@ -116,6 +150,23 @@ const TaskTablePage = () => {
           </tbody>
         </table>
       </div>
+
+      <Dialog open={confirmOpen} onClose={handleCancelDelete}>
+        <DialogTitle>Delete Task</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this task?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <button onClick={handleCancelDelete} className="dialog-btn cancel">
+            Cancel
+            </button>
+            <button onClick={handleConfirmDelete} className="dialog-btn delete">
+            Delete
+            </button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

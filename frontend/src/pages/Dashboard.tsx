@@ -3,23 +3,33 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import api from '../api/axios';
 import { CheckCircle2, Clock, ListTodo } from 'lucide-react';
 import './Dashboard.css';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 interface Task {
   id: number;
   title: string;
   status: 'TODO' | 'DOING' | 'DONE';
+  created_at: string;
 }
 
 const Dashboard = () => {
-  const { data: tasks, isLoading } = useQuery<Task[]>({
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+
+  const {
+    data: tasks,
+    isLoading: tasksLoading  
+  } = useQuery<Task[]>({
     queryKey: ['tasks'],
     queryFn: async () => {
       const response = await api.get('/tasks/');
       return response.data;
-    }
+    },
+    enabled: isAuthenticated && !authLoading,
+    retry: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (authLoading || tasksLoading) return <div>Loading...</div>;
 
   const statusCounts = tasks?.reduce((acc, task) => {
     acc[task.status] = (acc[task.status] || 0) + 1;
@@ -31,6 +41,8 @@ const Dashboard = () => {
     { name: 'Doing', value: statusCounts?.DOING || 0, color: '#4318FF' },
     { name: 'Done', value: statusCounts?.DONE || 0, color: '#05CD99' },
   ];
+
+  const sortedTasks = tasks?.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <div className="dashboard-container">
@@ -89,10 +101,12 @@ const Dashboard = () => {
         <div className="recent-tasks-card">
           <h3>Recent Tasks</h3>
           <ul className="recent-task-list">
-            {tasks?.slice(0, 5).map(task => (
+            {sortedTasks?.slice(0, 5).map(task => (
               <li key={task.id} className="recent-task-item">
                 <span className={`status-dot ${task.status.toLowerCase()}`}></span>
-                {task.title}
+                <Link to={`/tasks/${task.id}`} className="task-title-link">
+                  {task.title}
+                </Link>
               </li>
             ))}
           </ul>

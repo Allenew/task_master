@@ -29,14 +29,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       fetchUser();
     } else {
       setIsLoading(false);
-      // No token, user is not authenticated, go to loginPage
-      // You might want to redirect to login page here
-      // if current route is not /login or /register, redirect to login page
-      // a tip to alert user that they need to login first
-      
-      if (!['/login', '/register'].includes(window.location.pathname)) {
-        window.location.href = '/login';
-      }
     }
   }, []);
 
