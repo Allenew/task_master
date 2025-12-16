@@ -1,0 +1,28 @@
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.date-info {
+  color: #a3aed0;
+  font-size: 14px;
+}
+
+.view-title {
+  color: #2b3674;
+  font-size: 32px;
+  margin-bottom: 30px;
+}
+
+.view-description h3 {
+  color: #2b3674;
+  margin-bottom: 15px;
+}
+
+.view-description p {
+  color: #707eae;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
