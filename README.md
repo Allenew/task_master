@@ -62,6 +62,12 @@ A full-stack TODO List management app with a modern UI and robust backend.
     alembic upgrade head
     ```
 
+    > **Development Note**: If you modify the database models (`backend/Model/models.py`), you must generate a new migration:
+    > ```bash
+    > alembic revision --autogenerate -m "Describe your changes"
+    > alembic upgrade head
+    > ```
+
 6.  **Run Server**:
     ```bash
     uvicorn backend.main:app --reload

@@ -35,13 +35,13 @@ def create_task(db: Session, task: schemas.TaskCreate, user_id: int):
     label_names = task_data.pop('labels', [])
     
     # Enforce progress logic based on status
-    if task_data.get('status') == 'TODO':
-        task_data['progress'] = 0
-    elif task_data.get('status') == 'DONE':
-        task_data['progress'] = 100
-    elif task_data.get('status') == 'DOING':
-        p = task_data.get('progress', 0)
-        task_data['progress'] = max(0, min(100, p))
+    # if task_data.get('status') == 'TODO':
+    #     task_data['progress'] = 0
+    # elif task_data.get('status') == 'DONE':
+    #     task_data['progress'] = 100
+    # elif task_data.get('status') == 'DOING':
+    #     p = task_data.get('progress', 0)
+    #     task_data['progress'] = max(0, min(100, p))
     
     db_task = models.Task(**task_data, user_id=user_id, is_active=True)
     db.add(db_task)
