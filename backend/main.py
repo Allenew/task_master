@@ -25,3 +25,7 @@ app.include_router(UserController.router, prefix="/users", tags=["users"])
 app.include_router(TaskController.router, prefix="/tasks", tags=["tasks"])
 
 app.include_router(LabelController.router, prefix="/labels", tags=["labels"])
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
