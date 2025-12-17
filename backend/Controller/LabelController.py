@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 from ..Service import authService, labelService
 from .. import schemas
+from backend.Service import labelService, taskService
 from ..database import get_db
 
 router = APIRouter()
@@ -15,6 +17,11 @@ def read_labels(
     current_user: schemas.User = Depends(authService.get_current_user)
 ):
     return labelService.get_labels(db, skip=skip, limit=limit)
+
+@router.get("/labels/with_count", response_model=List[schemas.LabelWithCount])
+def read_labels_with_count(db: Session = Depends(get_db)):
+    labels_with_counts = labelService.get_labels_with_usage_count(db)
+    return [{"id": label.id, "name": label.name, "color": label.color, "count": count} for label, count in labels_with_counts]
 
 @router.get("/labels/{label_id}", response_model=schemas.Label)
 def read_label(

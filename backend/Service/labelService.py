@@ -1,5 +1,6 @@
 import random
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from backend.Model import models
 from .. import schemas
 
@@ -35,6 +36,12 @@ def delete_label(db: Session, label_id: int):
 
 def get_label_by_name(db: Session, name: str):
     return db.query(models.Label).filter(models.Label.name == name).first()
+
+def get_labels_with_usage_count(db: Session):
+    return db.query(
+        models.Label,
+        func.count(models.task_labels.c.task_id).label('count')
+    ).outerjoin(models.task_labels).group_by(models.Label.id).all()
 
 def add_label_to_task(db: Session, task_id: int, label_name: str, user_id: int):
     task = db.query(models.Task).filter(models.Task.id == task_id, models.Task.user_id == user_id).first()

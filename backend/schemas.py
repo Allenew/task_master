@@ -58,10 +58,12 @@ class TaskAddLabel(BaseModel):
 
 class Label(LabelBase):
     id: int
-    created_at: datetime
-    updated_at: Optional[datetime] = None
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
+
+class LabelWithCount(Label):
+    count: int
 
 class Task(TaskBase):
     id: int
