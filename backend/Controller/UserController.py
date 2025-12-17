@@ -35,6 +35,6 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/users/me", response_model=schemas.User)
+@router.get("/me", response_model=schemas.User)
 def read_users_me(current_user: schemas.User = Depends(authService.get_current_user)):
     return current_user

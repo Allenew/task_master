@@ -19,6 +19,12 @@ class User(Base):
     hashed_password = Column(String)
 
     tasks = relationship("Task", back_populates="owner")
+    participated_tasks = relationship("Task", secondary="task_participants", back_populates="participants")
+
+task_participants = Table('task_participants', Base.metadata,
+    Column('task_id', Integer, ForeignKey('tasks.id'), primary_key=True),
+    Column('user_id', Integer, ForeignKey('users.id'), primary_key=True)
+)
 
 task_labels = Table('task_labels', Base.metadata,
     Column('task_id', Integer, ForeignKey('tasks.id'), primary_key=True),
@@ -51,3 +57,4 @@ class Task(Base):
 
     owner = relationship("User", back_populates="tasks")
     labels = relationship("Label", secondary=task_labels, back_populates="tasks")
+    participants = relationship("User", secondary=task_participants, back_populates="participated_tasks")

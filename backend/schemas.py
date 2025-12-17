@@ -18,8 +18,13 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    
-    model_config = ConfigDict(from_attributes=True)
+    # tasks: List[Task] = [] # Avoid circular dependency
+
+    class Config:
+        orm_mode = True
+
+class UserInDB(User):
+    hashed_password: str
 
 class Token(BaseModel):
     access_token: str
@@ -65,13 +70,16 @@ class Label(LabelBase):
 class LabelWithCount(Label):
     count: int
 
+class TaskAddParticipant(BaseModel):
+    email: EmailStr
+
 class Task(TaskBase):
     id: int
-    is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
-    due_date: Optional[datetime] = None
-    user_id: int
-    labels: list[Label] = []
+    owner: User
+    labels: List[Label] = []
+    participants: List[User] = []
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True

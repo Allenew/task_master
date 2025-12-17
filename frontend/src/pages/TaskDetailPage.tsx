@@ -8,8 +8,23 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import toast from 'react-hot-toast';
 import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useAuth } from '../context/AuthContext'; // Add this import
+
 import './TaskDetail.css';
 import './TaskForm.css'; // Reuse form styles
+
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
 
 interface Label {
   id: number;
@@ -26,6 +41,8 @@ interface Task {
   created_at: string;
   updated_at: string;
   labels: Label[];
+  owner: User;
+  participants: User[];
 }
 
 interface TaskDetailPageProps {
@@ -44,6 +61,12 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [showLabelInput, setShowLabelInput] = useState(false);
   const [newLabel, setNewLabel] = useState('');
+  const [showParticipantInput, setShowParticipantInput] = useState(false);
+  const [participantEmail, setParticipantEmail] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [participantToRemove, setParticipantToRemove] = useState<User | null>(null);
+  // use user from AuthContext
+  const { user } = useAuth();
 
 
   const { data: task, isLoading } = useQuery<Task>({
@@ -106,6 +129,34 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
     }
   });
 
+  const addParticipantMutation = useMutation({
+    mutationFn: async (email: string) => {
+      await api.post(`/tasks/${id}/participants`, { email });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task', id] });
+      setParticipantEmail('');
+      setShowParticipantInput(false);
+      toast.success('Participant added');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || 'Failed to add participant');
+    }
+  });
+
+  const removeParticipantMutation = useMutation({
+    mutationFn: async (participantId: number) => {
+      await api.delete(`/tasks/${id}/participants/${participantId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task', id] });
+      toast.success('Participant removed');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.detail || 'Failed to remove participant');
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async () => {
       await api.put(`/tasks/${id}/deactivate`);
@@ -127,18 +178,45 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
     }
   };
 
+  const handleAddParticipant = () => {
+    if (participantEmail.trim()) {
+      addParticipantMutation.mutate(participantEmail.trim());
+    }
+  };
+
+  const handleRemoveParticipant = (participant: User) => {
+    setParticipantToRemove(participant);
+    setOpenDialog(true);
+  };
+
+  const confirmRemoveParticipant = () => {
+    if (participantToRemove) {
+      removeParticipantMutation.mutate(participantToRemove.id);
+      setOpenDialog(false);
+      setParticipantToRemove(null);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setParticipantToRemove(null);
+  };
+
   const handleRemoveLabel = (labelId: number) => {
     removeLabelMutation.mutate(labelId);
   };
 
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to move this task to trash?')) {
-      deleteMutation.mutate();
-    }
-  };
+  // const handleDelete = () => {
+  //   if (window.confirm('Are you sure you want to move this task to trash?')) {
+  //     deleteMutation.mutate();
+  //   }
+  // };
 
   if (isLoading) return <div>Loading...</div>;
   if (!task) return <div>Task not found</div>;
+
+  // Check if current user is the owner
+  const isOwner = task && user && task.owner.id === user.id;
 
   return (
     <div className="task-form-container">
@@ -152,9 +230,9 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
               <button onClick={() => setIsEditing(true)} className="save-btn" style={{ background: '#FFB547' }}>
                 <Edit2 size={18} /> Edit
               </button>
-              <button onClick={handleDelete} className="save-btn" style={{ background: '#E74C3C' }}>
+              {/* <button onClick={handleDelete} className="save-btn" style={{ background: '#E74C3C' }}>
                 <Trash2 size={18} /> Delete
-              </button>
+              </button> */}
             </>
           )}
         </div>
@@ -205,6 +283,60 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
                 onChange={(e) => setDescription(e.target.value)} 
                 rows={6}
               />
+            </div>
+
+            <div className="form-group">
+              <label>Participants</label>
+              <div className="custom-avatar-group">
+                <Avatar
+                  className="avatar-owner"
+                  title={task.owner.first_name + ' (Owner)'}
+                >
+                  {task.owner.first_name.charAt(0)}
+                </Avatar>
+                {task.participants.map(p => (
+                  <div key={p.id} className="participant-avatar-wrapper">
+                    <Avatar title={p.first_name}>{p.first_name.charAt(0)}</Avatar>
+                    {isOwner && (
+                      <button 
+                        type="button" 
+                        className="remove-participant-btn-small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveParticipant(p);
+                        }}
+                        title="Remove participant"
+                      >
+                        <X size={10} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {isOwner && (
+                  <button 
+                    type="button"
+                    onClick={() => setShowParticipantInput(!showParticipantInput)} 
+                    className="add-participant-btn" 
+                    title="Add Participant"
+                  >
+                    {showParticipantInput ? <X size={16} /> : <Plus size={16} />}
+                  </button>
+                )}
+              </div>
+              {showParticipantInput && (
+                <div className="add-participant-input-group" style={{ marginTop: '10px' }}>
+                  <input
+                    type="email"
+                    value={participantEmail}
+                    onChange={(e) => setParticipantEmail(e.target.value)}
+                    placeholder="Invite by email..."
+                    className="add-label-input"
+                  />
+                  <button type="button" onClick={handleAddParticipant} className="confirm-add-label-btn">
+                    Invite
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="form-group">
@@ -272,6 +404,21 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
               <p>{task.description || 'No description provided.'}</p>
             </div>
 
+            <div className="view-participants">
+              <h3>Participants</h3>
+              <div className="custom-avatar-group">
+                <Avatar
+                  className="avatar-owner"
+                  title={task.owner.first_name + ' (Owner)'}
+                >
+                  {task.owner.first_name.charAt(0)}
+                </Avatar>
+                {task.participants.map(p => (
+                  <Avatar key={p.id} title={p.first_name}>{p.first_name.charAt(0)}</Avatar>
+                ))}
+              </div>
+            </div>
+
             <div className="view-labels">
               <div className="labels-list">
                 {task.labels.map(label => (
@@ -286,6 +433,30 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
           </div>
         )}
       </div>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Remove Participant?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to remove participant {participantToRemove?.first_name} {participantToRemove?.last_name} ({participantToRemove?.email})?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <button onClick={handleCloseDialog} className="dialog-btn cancel">
+            Cancel
+          </button>
+          <button onClick={confirmRemoveParticipant} className="dialog-btn delete">
+            Remove
+          </button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

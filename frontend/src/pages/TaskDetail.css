@@ -16,9 +16,23 @@
   margin-bottom: 20px;
 }
 
+.view-description {
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
 .view-description h3 {
   color: #2b3674;
   margin-bottom: 15px;
+}
+
+.view-participants {
+  margin-top: 20px;
+}
+
+.view-participants h3 {
+  color: #2b3674;
+  margin-bottom: 10px;
 }
 
 .view-description p {
@@ -37,4 +51,84 @@
   flex-direction: row;
   flex-wrap: wrap;
   margin-top: 50px;
+}
+
+.participants-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.participants-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  margin-bottom: 5px;
+}
+
+.custom-avatar-group {
+  display: flex;
+  flex-direction: row;
+}
+
+.custom-avatar-group .MuiAvatar-root {
+  margin-left: -8px;
+  border: 2px solid white;
+  transition: transform 0.2s;
+}
+
+.custom-avatar-group .MuiAvatar-root:hover {
+  transform: translateY(-4px);
+  z-index: 20;
+}
+
+.custom-avatar-group .avatar-owner {
+  border-color: #FFB547;
+  z-index: 10;
+}
+
+.participant-avatar-wrapper {
+  position: relative;
+  margin-left: -8px;
+  transition: transform 0.2s;
+  border-radius: 50%; 
+}
+
+.participant-avatar-wrapper:hover {
+  transform: translateY(-4px);
+  z-index: 20;
+}
+
+.custom-avatar-group .participant-avatar-wrapper .MuiAvatar-root {
+  margin-left: 0;
+}
+
+.custom-avatar-group .participant-avatar-wrapper .MuiAvatar-root:hover {
+  transform: none;
+}
+
+.remove-participant-btn-small {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #ff4d4f;
+  color: white;
+  border: 2px solid white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 25;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.participant-avatar-wrapper:hover .remove-participant-btn-small {
+  display: flex;
 }

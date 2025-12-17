@@ -31,7 +31,7 @@ client = TestClient(app)
 
 def test_register_user():
     response = client.post(
-        "/register",
+        "/users/register",
         json={
             "email": "test@example.com", 
             "password": "password123",
@@ -47,7 +47,7 @@ def test_register_user():
 def get_auth_token():
     # Ensure user exists
     client.post(
-        "/register",
+        "/users/register",
         json={
             "email": "login@example.com", 
             "password": "password123",
@@ -57,7 +57,7 @@ def get_auth_token():
     )
     
     response = client.post(
-        "/token",
+        "/users/token",
         data={"username": "login@example.com", "password": "password123"},
     )
     return response.json()["access_token"]

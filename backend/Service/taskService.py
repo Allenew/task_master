@@ -1,14 +1,26 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from backend.Model import models
 from .. import schemas
-from . import labelService
-import random
+from . import labelService, userService
 
 def get_task(db: Session, task_id: int, user_id: int):
-    return db.query(models.Task).filter(models.Task.id == task_id, models.Task.user_id == user_id).first()
+    return db.query(models.Task).outerjoin(models.task_participants).filter(
+        models.Task.id == task_id,
+        or_(
+            models.Task.user_id == user_id,
+            models.task_participants.c.user_id == user_id
+        )
+    ).first()
 
 def get_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100, status: models.TaskStatus = None, is_active: bool = True):
-    query = db.query(models.Task).filter(models.Task.user_id == user_id)
+    query = db.query(models.Task).outerjoin(models.task_participants).filter(
+        or_(
+            models.Task.user_id == user_id,
+            models.task_participants.c.user_id == user_id
+        )
+    ).distinct()
+    
     if is_active is not None:
         query = query.filter(models.Task.is_active == is_active)
     if status:
@@ -66,3 +78,43 @@ def activate_task(db: Session, task_id: int, user_id: int):
         db.commit()
         db.refresh(db_task)
     return db_task
+
+def add_participant_to_task(db: Session, task_id: int, participant_email: str, owner_id: int):
+    task = get_task(db, task_id, owner_id)
+    if not task:
+        return None, "Task not found."
+    
+    if task.user_id != owner_id:
+        return None, "Only the task owner can add participants."
+
+    participant = userService.get_user_by_email(db, email=participant_email)
+    if not participant:
+        return None, "User to be added not found."
+
+    if participant in task.participants or task.owner == participant:
+        return None, "User is already a participant or the owner."
+
+    task.participants.append(participant)
+    db.commit()
+    db.refresh(task)
+    return task, "Participant added successfully."
+
+def remove_participant_from_task(db: Session, task_id: int, participant_id: int, owner_id: int):
+    task = get_task(db, task_id, owner_id)
+    if not task:
+        return None, "Task not found."
+        
+    if task.user_id != owner_id:
+        return None, "Only the task owner can remove participants."
+
+    participant = userService.get_user(db, user_id=participant_id)
+    if not participant:
+        return None, "User to be removed not found."
+
+    if participant not in task.participants:
+        return None, "User is not a participant."
+
+    task.participants.remove(participant)
+    db.commit()
+    db.refresh(task)
+    return task, "Participant removed successfully."

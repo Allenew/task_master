@@ -20,7 +20,7 @@ const LoginPage = () => {
       formData.append('username', email);
       formData.append('password', password);
       
-      const response = await api.post('/token', formData);
+      const response = await api.post('/users/token', formData);
       login(response.data.access_token);
       toast.success('Successfully logged in!');
       navigate('/dashboard');

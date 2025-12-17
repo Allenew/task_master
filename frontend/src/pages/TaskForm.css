@@ -132,3 +132,40 @@
 .cancel-add-label-btn:hover {
   background-color: #e0e4f8;
 }
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 8px 0;
+}
+
+
+.add-participant-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 8px;
+  z-index: 5;
+  transition: transform 0.2s, background-color 0.2s;
+  color: #555;
+}
+
+.add-participant-btn:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-4px);
+  z-index: 25;
+}
+
+.add-participant-input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 50%;
+}

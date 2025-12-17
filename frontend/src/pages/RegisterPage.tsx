@@ -15,7 +15,7 @@ const RegisterPage = () => {
     e.preventDefault();
     setError('');
     try {
-      await api.post('/register', {
+      await api.post('/users/register', {
         email,
         first_name: firstName,
         last_name: lastName,

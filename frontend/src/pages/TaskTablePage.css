@@ -152,25 +152,6 @@
   padding: 40px;
 }
 
-.dialog-btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.3s;
-}
-
-.dialog-btn.cancel {
-  background-color: #f4f7fe;
-  color: var(--color-text-light);
-}
-
-.dialog-btn.delete {
-  background-color: var(--color-primary);
-  color: var(--color-text-main);
-}
-
 .status-select {
   padding: 8px 12px;
   border-radius: 8px;
