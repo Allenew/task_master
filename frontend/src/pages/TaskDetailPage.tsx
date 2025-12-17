@@ -14,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Slider from '@mui/material/Slider';
 import { useAuth } from '../context/AuthContext'; // Add this import
 
 import './TaskDetail.css';
@@ -37,6 +38,7 @@ interface Task {
   title: string;
   description: string;
   status: string;
+  progress: number;
   due_date: string | null;
   created_at: string;
   updated_at: string;
@@ -58,6 +60,7 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('TODO');
+  const [progress, setProgress] = useState(0);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [showLabelInput, setShowLabelInput] = useState(false);
   const [newLabel, setNewLabel] = useState('');
@@ -85,12 +88,19 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
       setTitle(task.title);
       setDescription(task.description || '');
       setStatus(task.status);
+      setProgress(task.progress || 0);
       setDueDate(task.due_date ? new Date(task.due_date) : null);
     }
   }, [task]);
 
+  useEffect(() => {
+    if (progress <= 0) setStatus('TODO');
+    else if (progress > 0 && progress < 100) setStatus('DOING');
+    else if (progress === 100) setStatus('DONE');
+  }, [progress]);
+
   const updateMutation = useMutation({
-    mutationFn: async (updatedTask: { title: string; description: string; status: string; due_date: Date | null }) => {
+    mutationFn: async (updatedTask: { title: string; description: string; status: string; progress: number; due_date: Date | null }) => {
       await api.put(`/tasks/${id}`, updatedTask);
     },
     onSuccess: () => {
@@ -157,19 +167,19 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
     }
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async () => {
-      await api.put(`/tasks/${id}/deactivate`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      navigate('/tasks');
-    }
-  });
+  // const deleteMutation = useMutation({
+  //   mutationFn: async () => {
+  //     await api.put(`/tasks/${id}/deactivate`);
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['tasks'] });
+  //     navigate('/tasks');
+  //   }
+  // });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateMutation.mutate({ title, description, status, due_date: dueDate });
+    updateMutation.mutate({ title, description, status, progress, due_date: dueDate });
   };
 
   const handleAddLabel = () => {
@@ -251,7 +261,7 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
               />
             </div>
 
-            <div className="form-group">
+            {/* <div className="form-group">
               <label>Status</label>
               <select 
                 value={status} 
@@ -261,6 +271,22 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
                 <option value="DOING">Doing</option>
                 <option value="DONE">Done</option>
               </select>
+            </div> */}
+
+            <div className="form-group">
+              <label>Progress: {progress}%</label>
+              <Slider
+                value={progress}
+                onChange={(e, newValue) => setProgress(newValue as number)}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                step={1}
+                min={0}
+                max={100}
+                sx={{
+                  color: progress === 100 ? '#05cd99' : progress > 0 ? '#4318ff' : '#ffb547'
+                }}
+              />
             </div>
 
             <div className="form-group">
@@ -388,6 +414,7 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
             </div>
           </form>
         ) : (
+          // Edit
           <div className="task-view">
             <div className="view-header">
               <span className={`status-badge ${task.status.toLowerCase()}`} style={{ fontSize: '14px', padding: '8px 16px' }}>
@@ -395,12 +422,32 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
               </span>
               <span className="date-info">Created: {new Date(task.created_at).toLocaleDateString()}</span>
             </div>
+
             <h1 className="view-title">{task.title}</h1>
-            {task.due_date && (
-              <div className="view-due-date">
-                <strong>Due Date:</strong> {new Date(task.due_date).toLocaleString()}
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: '40px', marginBottom: '20px' }}>
+              <div className="view-progress">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontWeight: 600, color: '#2b3674' }}>Progress:</span>
+                  <Slider
+                    value={task.progress}
+                    valueLabelDisplay="auto"
+                    sx={{
+                      color: task.progress === 100 ? '#05cd99' : task.progress > 0 ? '#4318ff' : '#ffb547',
+                      width: '200px',
+                      '& .MuiSlider-thumb': {
+                         display: 'none',
+                      }
+                    }}
+                  />
+                  <span style={{ color: '#2b3674' }}>{task.progress}%</span>
+                </div>
               </div>
-            )}
+              {task.due_date && (
+                <div className="view-due-date" style={{ marginBottom: 0 }}>
+                  <strong>Due Date:</strong> {new Date(task.due_date).toLocaleString()}
+                </div>
+              )}
+            </div>
             <div className="view-description">
               <h3>Description</h3>
               <p>{task.description || 'No description provided.'}</p>

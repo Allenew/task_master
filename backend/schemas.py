@@ -37,6 +37,7 @@ class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     status: TaskStatus = TaskStatus.TODO
+    progress: int = 0
     due_date: Optional[datetime] = None
 
 class TaskCreate(TaskBase):
@@ -46,6 +47,7 @@ class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
+    progress: Optional[int] = None
     due_date: Optional[datetime] = None
 
 class LabelBase(BaseModel):

@@ -9,6 +9,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Avatar from '@mui/material/Avatar';
+import CircularProgress, { CircularProgressProps } from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import './TaskTablePage.css';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -26,8 +29,50 @@ interface Task {
   status: 'TODO' | 'DOING' | 'DONE';
   created_at: string;
   updated_at: string;
+  progress: number;
   owner: User;
   participants: User[];
+}
+
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number },
+) {
+  let color = '#ffb547'; // TODO color
+  if (props.value === 100) {
+    color = '#05cd99'; // DONE color
+  } else if (props.value > 0) {
+    color = '#4318ff'; // DOING color
+  }
+
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress 
+        variant="determinate" 
+        {...props} 
+        sx={{ color: color }}
+      />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          sx={{ color: 'text.secondary', fontSize: '0.7rem' }}
+        >
+          {`${Math.round(props.value)}%`}
+        </Typography>
+      </Box>
+    </Box>
+  );
 }
 
 const TaskTablePage = () => {
@@ -141,6 +186,7 @@ const TaskTablePage = () => {
               <th>Task Name</th>
               <th>Participants</th>
               <th>Status</th>
+              <th>Progress</th>
               <th>Created At</th>
               <th>Actions</th>
             </tr>
@@ -193,6 +239,9 @@ const TaskTablePage = () => {
                       {task.status}
                     </span>
                   )}
+                </td>
+                <td>
+                  <CircularProgressWithLabel value={task.progress} size={40} />
                 </td>
                 <td>{new Date(task.created_at).toLocaleDateString()}</td>
                 <td className="actions-cell">

@@ -34,6 +34,15 @@ def create_task(db: Session, task: schemas.TaskCreate, user_id: int):
     task_data = task.model_dump()
     label_names = task_data.pop('labels', [])
     
+    # Enforce progress logic based on status
+    if task_data.get('status') == 'TODO':
+        task_data['progress'] = 0
+    elif task_data.get('status') == 'DONE':
+        task_data['progress'] = 100
+    elif task_data.get('status') == 'DOING':
+        p = task_data.get('progress', 0)
+        task_data['progress'] = max(0, min(100, p))
+    
     db_task = models.Task(**task_data, user_id=user_id, is_active=True)
     db.add(db_task)
     db.commit()
@@ -50,6 +59,29 @@ def update_task(db: Session, task_id: int, task: schemas.TaskUpdate, user_id: in
     db_task = get_task(db, task_id, user_id)
     if db_task:
         update_data = task.model_dump(exclude_unset=True)
+        
+        status = update_data.get('status')
+        progress = update_data.get('progress')
+        
+        if status is not None:
+            if status == 'TODO':
+                update_data['progress'] = 0
+            elif status == 'DONE':
+                update_data['progress'] = 100
+            elif status == 'DOING':
+                # If progress also updated, use it. Else use current.
+                p = progress if progress is not None else db_task.progress
+                update_data['progress'] = max(0, min(100, p))
+        
+        elif progress is not None:
+            # Status not updated, but progress is.
+            if progress == 0:
+                update_data['status'] = 'TODO'
+            elif progress == 100:
+                update_data['status'] = 'DONE'
+            else:
+                update_data['status'] = 'DOING'
+
         for key, value in update_data.items():
             setattr(db_task, key, value)
         db.commit()

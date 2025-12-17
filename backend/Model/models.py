@@ -49,6 +49,7 @@ class Task(Base):
     title = Column(String, index=True)
     description = Column(String, nullable=True)
     status = Column(Enum(TaskStatus), default=TaskStatus.TODO)
+    progress = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
     due_date = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

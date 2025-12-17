@@ -19,7 +19,7 @@ const GuestPage = () => {
         <div className="hero-content">
           <h1>Manage your tasks with <span className="highlight">Efficiency</span></h1>
           <p>TaskMaster helps you organize your work and life. Track your progress, meet deadlines, and achieve your goals.</p>
-          <Link to="/register" className="cta-button">Get Started for Free</Link>
+          <Link to="/register" className="cta-button">Get Started</Link>
           
           <div className="features">
             <div className="feature-item">
