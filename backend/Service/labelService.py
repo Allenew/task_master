@@ -37,11 +37,20 @@ def delete_label(db: Session, label_id: int):
 def get_label_by_name(db: Session, name: str):
     return db.query(models.Label).filter(models.Label.name == name).first()
 
-def get_labels_with_usage_count(db: Session):
+def get_labels_with_usage_count(db: Session, user_id: int):
     return db.query(
         models.Label,
         func.count(models.task_labels.c.task_id).label('count')
-    ).outerjoin(models.task_labels).group_by(models.Label.id).all()
+    ).join(models.task_labels)\
+     .join(models.Task)\
+     .outerjoin(models.task_participants, models.Task.id == models.task_participants.c.task_id)\
+     .filter(
+         or_(
+             models.Task.user_id == user_id,
+             models.task_participants.c.user_id == user_id
+         )
+     )\
+     .group_by(models.Label.id).all()
 
 def add_label_to_task(db: Session, task_id: int, label_name: str, user_id: int):
     task = db.query(models.Task).outerjoin(models.task_participants).filter(

@@ -19,8 +19,11 @@ def read_labels(
     return labelService.get_labels(db, skip=skip, limit=limit)
 
 @router.get("/with_count", response_model=List[schemas.LabelWithCount])
-def read_labels_with_count(db: Session = Depends(get_db)):
-    labels_with_counts = labelService.get_labels_with_usage_count(db)
+def read_labels_with_count(
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(authService.get_current_user)
+):
+    labels_with_counts = labelService.get_labels_with_usage_count(db, user_id=current_user.id)
     return [{"id": label.id, "name": label.name, "color": label.color, "count": count} for label, count in labels_with_counts]
 
 @router.get("/{label_id}", response_model=schemas.Label)

@@ -65,7 +65,7 @@ const Dashboard = () => {
     color: label.color,
   }));
 
-  const customRenderer = (tag: any, size: number, color: string) => (
+  const customRenderer = (tag: any, size: number) => (
     <span
       key={tag.value}
       style={{
