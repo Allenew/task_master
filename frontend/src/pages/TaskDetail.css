@@ -88,6 +88,8 @@
 .custom-avatar-group .avatar-owner {
   border-color: #FFB547;
   z-index: 10;
+  background-color: white;
+  color: var(--color-primary);
 }
 
 .participant-avatar-wrapper {

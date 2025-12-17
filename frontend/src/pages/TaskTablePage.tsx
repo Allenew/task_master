@@ -8,9 +8,17 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
+import Avatar from '@mui/material/Avatar';
 import './TaskTablePage.css';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
 
 interface Task {
   id: number;
@@ -18,6 +26,8 @@ interface Task {
   status: 'TODO' | 'DOING' | 'DONE';
   created_at: string;
   updated_at: string;
+  owner: User;
+  participants: User[];
 }
 
 const TaskTablePage = () => {
@@ -129,6 +139,7 @@ const TaskTablePage = () => {
             <tr>
               <th>ID</th>
               <th>Task Name</th>
+              <th>Participants</th>
               <th>Status</th>
               <th>Created At</th>
               <th>Actions</th>
@@ -139,6 +150,27 @@ const TaskTablePage = () => {
               <tr key={task.id}>
                 <td>#{task.id}</td>
                 <td className="task-title">{task.title}</td>
+                <td>
+                  <div className="custom-avatar-group" style={{ justifyContent: 'flex-start', paddingLeft: '8px' }}>
+                     <Avatar
+                        className="avatar-owner"
+                        title={task.owner.first_name + ' (Owner)'}
+                        sx={{ width: 30, height: 30, fontSize: 14, backgroundColor: '#fefeffff', color: '#FFC107' }}
+                      >
+                        {task.owner.first_name.charAt(0)}
+                      </Avatar>
+                      {task.participants.map(p => (
+                        <Avatar 
+                          key={p.id} 
+                          title={p.first_name}
+                          sx={{ width: 30, height: 30, fontSize: 14 }}
+                        >
+                          {p.first_name.charAt(0)}
+                        </Avatar>
+                      ))}
+                  </div>
+                </td>
+
                 <td>
                   {editingStatusId === task.id ? (
                     <select

@@ -161,3 +161,28 @@
   cursor: pointer;
   transition: border-color 0.3s;
 }
+.custom-avatar-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.custom-avatar-group .MuiAvatar-root {
+  margin-left: -8px;
+  border: 2px solid white;
+  transition: transform 0.2s;
+}
+
+.custom-avatar-group .MuiAvatar-root:first-child {
+  margin-left: 0;
+}
+
+.custom-avatar-group .MuiAvatar-root:hover {
+  transform: translateY(-4px);
+  z-index: 20;
+}
+
+.custom-avatar-group .avatar-owner {
+  border-color: #FFB547;
+  z-index: 10;
+}

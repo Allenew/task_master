@@ -296,7 +296,9 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
                 </Avatar>
                 {task.participants.map(p => (
                   <div key={p.id} className="participant-avatar-wrapper">
-                    <Avatar title={p.first_name}>{p.first_name.charAt(0)}</Avatar>
+                    <Avatar title={p.first_name}>
+                      {p.first_name.charAt(0)}
+                    </Avatar>
                     {isOwner && (
                       <button 
                         type="button" 
