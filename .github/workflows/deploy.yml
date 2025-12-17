@@ -26,9 +26,8 @@ jobs:
             git pull origin main
             
             # Rebuild and restart containers
-            # -d: Detached mode
-            # --build: Rebuild images if Dockerfiles changed
-            docker-compose up -d --build
+            # Use sudo to ensure we have permissions
+            # Disable BuildKit to avoid compatibility issues on Amazon Linux 2
+            sudo DOCKER_BUILDKIT=0 /usr/local/bin/docker-compose up -d --build
             
             # Prune unused images to save space
-            docker image prune -f
