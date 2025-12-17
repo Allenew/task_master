@@ -36,7 +36,10 @@ const TaskDetailPage = () => {
     queryFn: async () => {
       const response = await api.get(`/tasks/${id}`);
       return response.data;
-    }
+    },
+    enabled: !!id,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

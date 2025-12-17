@@ -28,6 +28,9 @@ api.interceptors.response.use(
       setTimeout(() => {
         window.location.href = '/login';
       }, 1000);
+    } else if (error.response && error.response.status >= 400) {
+      const errorMessage = error.response.data?.detail || 'An error occurred. Please try again.';
+      toast.error(errorMessage);
     }
     return Promise.reject(error);
   }
