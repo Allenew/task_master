@@ -182,7 +182,7 @@ const TaskTablePage = () => {
         <table className="task-table">
           <thead>
             <tr>
-              <th>ID</th>
+              {/* <th>ID</th> */}
               <th>Task Name</th>
               <th>Participants</th>
               <th>Status</th>
@@ -194,7 +194,7 @@ const TaskTablePage = () => {
           <tbody>
             {tasks?.map((task) => (
               <tr key={task.id}>
-                <td>#{task.id}</td>
+                {/* <td>#{task.id}</td> */}
                 <td className="task-title">{task.title}</td>
                 <td>
                   <div className="custom-avatar-group" style={{ justifyContent: 'flex-start', paddingLeft: '8px' }}>

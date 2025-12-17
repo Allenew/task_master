@@ -82,6 +82,10 @@
   border-bottom: 1px solid #f4f7fe;
 }
 
+.task-table tr:hover {
+  background-color: #f9faff;
+}
+
 .task-title {
   font-weight: 600;
 }

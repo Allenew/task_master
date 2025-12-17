@@ -7,6 +7,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Chip from '@mui/material/Chip';
+import Slider from '@mui/material/Slider';
 import './TaskForm.css';
 
 const TaskCreatePage = () => {
@@ -16,12 +17,13 @@ const TaskCreatePage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('TODO');
+  const [progress, setProgress] = useState(0);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [labels, setLabels] = useState<string[]>([]);
   const [labelInput, setLabelInput] = useState('');
 
   const createMutation = useMutation({
-    mutationFn: async (newTask: { title: string; description: string; status: string; due_date: Date | null; labels: string[] }) => {
+    mutationFn: async (newTask: { title: string; description: string; status: string; progress: number; due_date: Date | null; labels: string[] }) => {
       await api.post('/tasks/', newTask);
     },
     onSuccess: () => {
@@ -41,9 +43,17 @@ const TaskCreatePage = () => {
     setLabels(labels.filter(label => label !== labelToRemove));
   };
 
+  const handleProgressChange = (event: Event, newValue: number | number[]) => {
+    const val = newValue as number;
+    setProgress(val);
+    if (val === 0) setStatus('TODO');
+    else if (val === 100) setStatus('DONE');
+    else setStatus('DOING');
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate({ title, description, status, due_date: dueDate, labels });
+    createMutation.mutate({ title, description, status, progress, due_date: dueDate, labels });
   };
 
   return (
@@ -69,15 +79,18 @@ const TaskCreatePage = () => {
           </div>
 
           <div className="form-group">
-            <label>Status</label>
-            <select 
-              value={status} 
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="TODO">To Do</option>
-              <option value="DOING">Doing</option>
-              <option value="DONE">Done</option>
-            </select>
+            <label>Progress: {progress}%</label>
+            <Slider
+              value={progress}
+              onChange={handleProgressChange}
+              valueLabelDisplay="auto"
+              step={1}
+              min={0}
+              max={100}
+              sx={{
+                color: progress === 100 ? '#05cd99' : progress > 0 ? '#4318ff' : '#ffb547'
+              }}
+            />
           </div>
 
           <div className="form-group">
