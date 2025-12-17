@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { CheckCircle2 } from 'lucide-react';
+import logoText from '../assets/icon/task-master-text.png';
 import './GuestPage.css';
 
 const GuestPage = () => {
@@ -7,7 +8,7 @@ const GuestPage = () => {
     <div className="guest-container">
       <nav className="guest-nav">
         <div className="logo">
-          <img src="/src/assets/icon/task-master-text.png" alt="TaskMaster Logo" />
+          <img src={logoText} alt="TaskMaster Logo" />
         </div>
         <div className="auth-buttons">
           <Link to="/login" className="btn btn-outline">Login</Link>

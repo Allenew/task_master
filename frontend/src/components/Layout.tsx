@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, ListTodo, LogOut, Trash2, Settings, MessageSquare } from 'lucide-react';
+import logoText from '../assets/icon/task-master-text.png';
 import './Layout.css';
 
 const Layout = () => {
@@ -38,7 +39,7 @@ const Layout = () => {
       <aside className="sidebar">
         <div className="sidebar-header">
             <img
-            src="/src/assets/icon/task-master-text.png"
+            src={logoText}
             alt="TaskMaster Logo"
             className="sidebar-logo"
             />

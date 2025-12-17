@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
+import logoText from '../assets/icon/task-master-text.png';
 import './Auth.css';
 
 const RegisterPage = () => {
@@ -31,7 +32,7 @@ const RegisterPage = () => {
     <div className="auth-container">
       <div className="auth-header">
         <Link to="/">
-          <img src="/src/assets/icon/task-master-text.png" alt="TaskMaster Logo" className="auth-logo" />
+          <img src={logoText} alt="TaskMaster Logo" className="auth-logo" />
         </Link>
       </div>
       <div className="auth-card">

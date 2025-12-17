@@ -10,11 +10,14 @@ COPY requirements.txt .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /app
-COPY . .
+# Copy the current directory contents into the container at /app/backend
+COPY . ./backend
+
+# Set PYTHONPATH to include /app so we can import 'backend' package
+ENV PYTHONPATH=/app
 
 # Expose port 8000
 EXPOSE 8000
 
 # Run app.py when the container launches
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

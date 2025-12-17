@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import logoText from '../assets/icon/task-master-text.png';
 import './Auth.css';
 
 const LoginPage = () => {
@@ -34,7 +35,7 @@ const LoginPage = () => {
     <div className="auth-container">
       <div className="auth-header">
         <Link to="/">
-          <img src="/src/assets/icon/task-master-text.png" alt="TaskMaster Logo" className="auth-logo" />
+          <img src={logoText} alt="TaskMaster Logo" className="auth-logo" />
         </Link>
       </div>
       <div className="auth-card">
