@@ -3,6 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
 import { ArrowLeft, Save, Edit2, Trash2 } from 'lucide-react';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import './TaskDetail.css';
 import './TaskForm.css'; // Reuse form styles
 
 interface Task {
@@ -10,6 +14,7 @@ interface Task {
   title: string;
   description: string;
   status: string;
+  due_date: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -23,6 +28,8 @@ const TaskDetailPage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('TODO');
+  const [dueDate, setDueDate] = useState<Date | null>(null);
+
 
   const { data: task, isLoading } = useQuery<Task>({
     queryKey: ['task', id],
@@ -37,11 +44,12 @@ const TaskDetailPage = () => {
       setTitle(task.title);
       setDescription(task.description || '');
       setStatus(task.status);
+      setDueDate(task.due_date ? new Date(task.due_date) : null);
     }
   }, [task]);
 
   const updateMutation = useMutation({
-    mutationFn: async (updatedTask: { title: string; description: string; status: string }) => {
+    mutationFn: async (updatedTask: { title: string; description: string; status: string; due_date: Date | null }) => {
       await api.put(`/tasks/${id}`, updatedTask);
     },
     onSuccess: () => {
@@ -63,7 +71,7 @@ const TaskDetailPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateMutation.mutate({ title, description, status });
+    updateMutation.mutate({ title, description, status, due_date: dueDate });
   };
 
   const handleDelete = () => {
@@ -121,6 +129,19 @@ const TaskDetailPage = () => {
             </div>
 
             <div className="form-group">
+              <label>Due Date</label>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker
+                  value={dueDate}
+                  onChange={(newValue) => setDueDate(newValue)}
+                  slotProps={{
+                    textField: { fullWidth: true }
+                  }}
+                />
+              </LocalizationProvider>
+            </div>
+
+            <div className="form-group">
               <label>Description</label>
               <textarea 
                 value={description} 
@@ -147,6 +168,11 @@ const TaskDetailPage = () => {
               <span className="date-info">Created: {new Date(task.created_at).toLocaleDateString()}</span>
             </div>
             <h1 className="view-title">{task.title}</h1>
+            {task.due_date && (
+              <div className="view-due-date">
+                <strong>Due Date:</strong> {new Date(task.due_date).toLocaleString()}
+              </div>
+            )}
             <div className="view-description">
               <h3>Description</h3>
               <p>{task.description || 'No description provided.'}</p>

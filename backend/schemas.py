@@ -32,6 +32,7 @@ class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     status: TaskStatus = TaskStatus.TODO
+    due_date: Optional[datetime] = None
 
 class TaskCreate(TaskBase):
     pass
@@ -40,12 +41,14 @@ class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
+    due_date: Optional[datetime] = None
 
 class Task(TaskBase):
     id: int
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
+    due_date: Optional[datetime] = None
     user_id: int
 
     model_config = ConfigDict(from_attributes=True)

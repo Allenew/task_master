@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
 import { ArrowLeft, Save } from 'lucide-react';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import './TaskForm.css';
 
 const TaskCreatePage = () => {
@@ -12,9 +15,10 @@ const TaskCreatePage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('TODO');
+  const [dueDate, setDueDate] = useState<Date | null>(null);
 
   const createMutation = useMutation({
-    mutationFn: async (newTask: { title: string; description: string; status: string }) => {
+    mutationFn: async (newTask: { title: string; description: string; status: string; due_date: Date | null }) => {
       await api.post('/tasks/', newTask);
     },
     onSuccess: () => {
@@ -25,7 +29,7 @@ const TaskCreatePage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate({ title, description, status });
+    createMutation.mutate({ title, description, status, due_date: dueDate });
   };
 
   return (
@@ -60,6 +64,19 @@ const TaskCreatePage = () => {
               <option value="DOING">Doing</option>
               <option value="DONE">Done</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label>Due Date</label>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                value={dueDate}
+                onChange={(newValue) => setDueDate(newValue)}
+                slotProps={{
+                  textField: { fullWidth: true }
+                }}
+              />
+            </LocalizationProvider>
           </div>
 
           <div className="form-group">

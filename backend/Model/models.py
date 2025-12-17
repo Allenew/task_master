@@ -28,6 +28,7 @@ class Task(Base):
     description = Column(String, nullable=True)
     status = Column(Enum(TaskStatus), default=TaskStatus.TODO)
     is_active = Column(Boolean, default=True)
+    due_date = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     user_id = Column(Integer, ForeignKey("users.id"))

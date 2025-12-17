@@ -25,6 +25,7 @@ const TaskTablePage = () => {
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [editingStatusId, setEditingStatusId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   const {
@@ -41,6 +42,22 @@ const TaskTablePage = () => {
     },
     enabled: isAuthenticated && !authLoading,
     retry: false,
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      await api.put(`/tasks/${id}`, { status });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', filterStatus] });
+      toast.success('Task status updated');
+    },
+    onError: () => {
+      toast.error('Failed to update status');
+    },
+    onSettled: () => {
+      setEditingStatusId(null);
+    }
   });
 
   const abandonMutation = useMutation({
@@ -72,6 +89,10 @@ const TaskTablePage = () => {
   const handleCancelDelete = () => {
     setConfirmOpen(false);
     setDeleteId(null);
+  };
+
+  const handleStatusChange = (id: number, newStatus: string) => {
+    updateStatusMutation.mutate({ id, status: newStatus });
   };
 
   if (authLoading || tasksLoading) return <div>Loading...</div>;
@@ -119,9 +140,27 @@ const TaskTablePage = () => {
                 <td>#{task.id}</td>
                 <td className="task-title">{task.title}</td>
                 <td>
-                  <span className={`status-badge ${task.status.toLowerCase()}`}>
-                    {task.status}
-                  </span>
+                  {editingStatusId === task.id ? (
+                    <select
+                      value={task.status}
+                      onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                      onBlur={() => setEditingStatusId(null)}
+                      autoFocus
+                      className="status-select"
+                    >
+                      <option value="TODO">To Do</option>
+                      <option value="DOING">Doing</option>
+                      <option value="DONE">Done</option>
+                    </select>
+                  ) : (
+                    <span 
+                      className={`status-badge ${task.status.toLowerCase()}`}
+                      onClick={() => setEditingStatusId(task.id)}
+                      title="Click to switch status"
+                    >
+                      {task.status}
+                    </span>
+                  )}
                 </td>
                 <td>{new Date(task.created_at).toLocaleDateString()}</td>
                 <td className="actions-cell">

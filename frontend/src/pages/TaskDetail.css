@@ -13,7 +13,7 @@
 .view-title {
   color: #2b3674;
   font-size: 32px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .view-description h3 {
@@ -26,3 +26,8 @@
   line-height: 1.6;
   white-space: pre-wrap;
 }
+.view-due-date {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-bottom: 30px;
+} 
