@@ -1,9 +1,10 @@
 :root {
   /* Theme Colors */
   --color-primary: #FFC107; /* Golden Yellow */
-  --color-primary-hover: #FFB300;
+  --color-primary-hover: #f8af03e8;
   --color-secondary: #1a1a1a;
   --color-text-main: #000000; /* Black */
+  --color-text-main-hover: #ffffff;
   --color-text-light: #424242; /* Light Black */
   --color-accent-green: #05cd99;
   --color-bg-light: #f5f7fa;

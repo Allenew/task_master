@@ -16,7 +16,8 @@
 }
 
 .back-btn:hover {
-  color: #4318ff;
+  color: var(--color-text-main);
+  background: none;
 }
 
 .form-card {
@@ -53,7 +54,7 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #4318ff;
+  border-color: var(--color-primary);
   outline: none;
 }
 
@@ -76,10 +77,10 @@
 
 .save-btn {
   padding: 12px 25px;
-  background: #4318ff;
+  background: var(--color-primary);
   border: none;
   border-radius: 10px;
-  color: white;
+  color: var(--color-text-main);
   font-weight: 600;
   cursor: pointer;
   display: flex;
