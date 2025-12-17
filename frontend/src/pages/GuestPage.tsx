@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { CheckCircle2 } from 'lucide-react';
 import logoText from '../assets/icon/task-master-text.png';
+import demoImage from '../assets/guest_page_placeholder.png';
 import './GuestPage.css';
 
 const GuestPage = () => {
@@ -39,7 +40,7 @@ const GuestPage = () => {
         </div>
         <div className="hero-image">
           <img
-            src="/src/assets/guest_page_placeholder.png"
+            src={demoImage}
             alt="Task Dashboard Preview"
             className="guest-illustration"
           />
