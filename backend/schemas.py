@@ -43,6 +43,7 @@ class TaskUpdate(BaseModel):
 
 class Task(TaskBase):
     id: int
+    is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
     user_id: int

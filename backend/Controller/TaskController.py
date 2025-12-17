@@ -23,10 +23,11 @@ def read_tasks(
     skip: int = 0, 
     limit: int = 100, 
     status: models.TaskStatus = None,
+    is_active: bool = True,
     db: Session = Depends(get_db),
     current_user: schemas.User = Depends(authService.get_current_user)
 ):
-    return taskService.get_tasks(db, user_id=current_user.id, skip=skip, limit=limit, status=status)
+    return taskService.get_tasks(db, user_id=current_user.id, skip=skip, limit=limit, status=status, is_active=is_active)
 
 @router.get("/tasks/{task_id}", response_model=schemas.Task)
 def read_task(
@@ -35,6 +36,30 @@ def read_task(
     current_user: schemas.User = Depends(authService.get_current_user)
 ):
     db_task = taskService.get_task(db, task_id=task_id, user_id=current_user.id)
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    if not db_task.is_active:
+        raise HTTPException(status_code=400, detail="Task is not active")
+    return db_task
+
+@router.put("/tasks/{task_id}/deactivate", response_model=schemas.Task)
+def deactivate_task(
+    task_id: int, 
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(authService.get_current_user)
+):
+    db_task = taskService.deactivate_task(db, task_id=task_id, user_id=current_user.id)
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return db_task
+
+@router.put("/tasks/{task_id}/activate", response_model=schemas.Task)
+def activate_task(
+    task_id: int, 
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(authService.get_current_user)
+):
+    db_task = taskService.activate_task(db, task_id=task_id, user_id=current_user.id)
     if db_task is None:
         raise HTTPException(status_code=404, detail="Task not found")
     return db_task

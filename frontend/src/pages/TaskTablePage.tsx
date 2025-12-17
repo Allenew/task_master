@@ -43,16 +43,16 @@ const TaskTablePage = () => {
     retry: false,
   });
 
-  const deleteMutation = useMutation({
+  const abandonMutation = useMutation({
     mutationFn: async (id: number) => {
-      await api.delete(`/tasks/${id}`);
+      await api.put(`/tasks/${id}/deactivate`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      toast.success('Task deleted successfully');
+      toast.success('Task moved to trash');
     },
     onError: () => {
-      toast.error('Failed to delete task');
+      toast.error('Failed to abandon task');
     }
   });
 
@@ -61,9 +61,9 @@ const TaskTablePage = () => {
     setConfirmOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmAbandon = () => {
     if (deleteId !== null) {
-      deleteMutation.mutate(deleteId);
+      abandonMutation.mutate(deleteId);
     }
     setConfirmOpen(false);
     setDeleteId(null);
@@ -135,7 +135,7 @@ const TaskTablePage = () => {
                     type="button"
                     onClick={() => handleDelete(task.id)}
                     className="action-btn delete"
-                    title="Delete"
+                    title="Abandon"
                   >
                     <Trash2 size={16} color="#e74c3c" />
                   </button>
@@ -152,18 +152,18 @@ const TaskTablePage = () => {
       </div>
 
       <Dialog open={confirmOpen} onClose={handleCancelDelete}>
-        <DialogTitle>Delete Task</DialogTitle>
+        <DialogTitle>Abandon Task</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this task?
+            Are you sure you want to abandon this task?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
             <button onClick={handleCancelDelete} className="dialog-btn cancel">
             Cancel
             </button>
-            <button onClick={handleConfirmDelete} className="dialog-btn delete">
-            Delete
+            <button onClick={handleConfirmAbandon} className="dialog-btn delete">
+            Abandon
             </button>
         </DialogActions>
       </Dialog>

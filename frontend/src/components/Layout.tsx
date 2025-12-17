@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, ListTodo, LogOut } from 'lucide-react';
+import { LayoutDashboard, ListTodo, LogOut, Trash2 } from 'lucide-react';
 import './Layout.css';
 
 const Layout = () => {
@@ -33,6 +33,9 @@ const Layout = () => {
           </Link>
           <Link to="/tasks" className={location.pathname === '/tasks' ? 'active' : ''}>
             <ListTodo size={20} /> All Tasks
+          </Link>
+          <Link to="/trash" className={location.pathname === '/trash' ? 'active' : ''}>
+            <Trash2 size={20} /> Trash
           </Link>
         </nav>
         <div className="sidebar-footer">

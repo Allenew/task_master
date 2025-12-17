@@ -53,7 +53,7 @@ const TaskDetailPage = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      await api.delete(`/tasks/${id}`);
+      await api.put(`/tasks/${id}/deactivate`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -67,7 +67,7 @@ const TaskDetailPage = () => {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
+    if (window.confirm('Are you sure you want to move this task to trash?')) {
       deleteMutation.mutate();
     }
   };

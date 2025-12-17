@@ -14,6 +14,7 @@ load_dotenv()
 
 # Import Base and SQLALCHEMY_DATABASE_URL
 from backend.database import Base, SQLALCHEMY_DATABASE_URL
+from backend.Model import models
 
 config = context.config
 

@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import TaskTablePage from './pages/TaskTablePage';
 import TaskCreatePage from './pages/TaskCreatePage';
 import TaskDetailPage from './pages/TaskDetailPage';
+import TrashPage from './pages/TrashPage';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
 
@@ -54,6 +55,7 @@ function AppRoutes() {
         <Route path="tasks/new" element={<TaskCreatePage />} />
         <Route path="tasks/:id" element={<TaskDetailPage />} />
         <Route path="tasks/:id/edit" element={<TaskDetailPage />} />
+        <Route path="trash" element={<TrashPage />} />
       </Route>
     </Routes>
   );
