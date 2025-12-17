@@ -1,6 +1,6 @@
 import random
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from backend.Model import models
 from .. import schemas
 
@@ -44,7 +44,14 @@ def get_labels_with_usage_count(db: Session):
     ).outerjoin(models.task_labels).group_by(models.Label.id).all()
 
 def add_label_to_task(db: Session, task_id: int, label_name: str, user_id: int):
-    task = db.query(models.Task).filter(models.Task.id == task_id, models.Task.user_id == user_id).first()
+    task = db.query(models.Task).outerjoin(models.task_participants).filter(
+        models.Task.id == task_id,
+        or_(
+            models.Task.user_id == user_id,
+            models.task_participants.c.user_id == user_id
+        )
+    ).first()
+    
     if not task:
         return None
 
@@ -67,7 +74,14 @@ def add_label_to_task(db: Session, task_id: int, label_name: str, user_id: int):
     return task
 
 def remove_label_from_task(db: Session, task_id: int, label_id: int, user_id: int):
-    task = db.query(models.Task).filter(models.Task.id == task_id, models.Task.user_id == user_id).first()
+    task = db.query(models.Task).outerjoin(models.task_participants).filter(
+        models.Task.id == task_id,
+        or_(
+            models.Task.user_id == user_id,
+            models.task_participants.c.user_id == user_id
+        )
+    ).first()
+    
     label = get_label(db, label_id)
     if task and label and label in task.labels:
         task.labels.remove(label)
