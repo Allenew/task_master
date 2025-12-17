@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 from enum import Enum
 
@@ -35,13 +35,33 @@ class TaskBase(BaseModel):
     due_date: Optional[datetime] = None
 
 class TaskCreate(TaskBase):
-    pass
+    labels: Optional[List[str]] = []
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     status: Optional[TaskStatus] = None
     due_date: Optional[datetime] = None
+
+class LabelBase(BaseModel):
+    name: str
+    color: Optional[str] = None
+
+class LabelCreate(LabelBase):
+    pass
+
+class LabelUpdate(LabelBase):
+    pass
+
+class TaskAddLabel(BaseModel):
+    label_name: str
+
+class Label(LabelBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
 
 class Task(TaskBase):
     id: int
@@ -50,5 +70,6 @@ class Task(TaskBase):
     updated_at: Optional[datetime] = None
     due_date: Optional[datetime] = None
     user_id: int
+    labels: list[Label] = []
 
     model_config = ConfigDict(from_attributes=True)

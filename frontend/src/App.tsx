@@ -54,7 +54,7 @@ function AppRoutes() {
         <Route path="tasks" element={<TaskTablePage />} />
         <Route path="tasks/new" element={<TaskCreatePage />} />
         <Route path="tasks/:id" element={<TaskDetailPage />} />
-        <Route path="tasks/:id/edit" element={<TaskDetailPage />} />
+        <Route path="tasks/:id/edit" element={<TaskDetailPage isEditingByDefault={true} />} />
         <Route path="trash" element={<TrashPage />} />
       </Route>
     </Routes>

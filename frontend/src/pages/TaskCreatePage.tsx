@@ -6,6 +6,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import Chip from '@mui/material/Chip';
 import './TaskForm.css';
 
 const TaskCreatePage = () => {
@@ -16,9 +17,11 @@ const TaskCreatePage = () => {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('TODO');
   const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [labels, setLabels] = useState<string[]>([]);
+  const [labelInput, setLabelInput] = useState('');
 
   const createMutation = useMutation({
-    mutationFn: async (newTask: { title: string; description: string; status: string; due_date: Date | null }) => {
+    mutationFn: async (newTask: { title: string; description: string; status: string; due_date: Date | null; labels: string[] }) => {
       await api.post('/tasks/', newTask);
     },
     onSuccess: () => {
@@ -27,9 +30,20 @@ const TaskCreatePage = () => {
     }
   });
 
+  const handleAddLabel = () => {
+    if (labelInput.trim() && !labels.includes(labelInput.trim())) {
+      setLabels([...labels, labelInput.trim()]);
+      setLabelInput('');
+    }
+  };
+
+  const handleRemoveLabel = (labelToRemove: string) => {
+    setLabels(labels.filter(label => label !== labelToRemove));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate({ title, description, status, due_date: dueDate });
+    createMutation.mutate({ title, description, status, due_date: dueDate, labels });
   };
 
   return (
@@ -87,6 +101,33 @@ const TaskCreatePage = () => {
               rows={6}
               placeholder="Enter task description..."
             />
+          </div>
+
+          <div className="form-group">
+            <label>Labels</label>
+            <div className="labels-container">
+              {labels.map(label => (
+                <Chip
+                  key={label}
+                  label={label}
+                  onDelete={() => handleRemoveLabel(label)}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
+                />
+              ))}
+            </div>
+            <div className="add-label-input-group" style={{ marginTop: '10px' }}>
+              <input
+                type="text"
+                value={labelInput}
+                onChange={(e) => setLabelInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddLabel(); } }}
+                placeholder="Add a label and press Enter"
+                className="add-label-input"
+              />
+              <button type="button" onClick={handleAddLabel} className="confirm-add-label-btn">
+                Add
+              </button>
+            </div>
           </div>
 
           <div className="form-actions">

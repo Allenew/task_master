@@ -1,5 +1,5 @@
 import enum
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Enum
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Enum, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ..database import Base
@@ -20,6 +20,22 @@ class User(Base):
 
     tasks = relationship("Task", back_populates="owner")
 
+task_labels = Table('task_labels', Base.metadata,
+    Column('task_id', Integer, ForeignKey('tasks.id'), primary_key=True),
+    Column('label_id', Integer, ForeignKey('labels.id'), primary_key=True)
+)
+
+class Label(Base):
+    __tablename__ = "labels"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)
+    color = Column(String, default="#FEFBFB")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    tasks = relationship("Task", secondary=task_labels, back_populates="labels")
+
 class Task(Base):
     __tablename__ = "tasks"
 
@@ -34,3 +50,4 @@ class Task(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="tasks")
+    labels = relationship("Label", secondary=task_labels, back_populates="tasks")

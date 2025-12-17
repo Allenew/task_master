@@ -2,12 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
-import { ArrowLeft, Save, Edit2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Edit2, Trash2, Plus, X, Check } from 'lucide-react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import toast from 'react-hot-toast';
+import Chip from '@mui/material/Chip';
 import './TaskDetail.css';
 import './TaskForm.css'; // Reuse form styles
+
+interface Label {
+  id: number;
+  name: string;
+  color: string;
+}
 
 interface Task {
   id: number;
@@ -17,18 +25,25 @@ interface Task {
   due_date: string | null;
   created_at: string;
   updated_at: string;
+  labels: Label[];
 }
 
-const TaskDetailPage = () => {
+interface TaskDetailPageProps {
+  isEditingByDefault?: boolean;
+}
+
+const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isEditingByDefault);
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('TODO');
   const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [showLabelInput, setShowLabelInput] = useState(false);
+  const [newLabel, setNewLabel] = useState('');
 
 
   const { data: task, isLoading } = useQuery<Task>({
@@ -59,6 +74,35 @@ const TaskDetailPage = () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['task', id] });
       setIsEditing(false);
+      toast.success('Task updated successfully');
+    }
+  });
+
+  const addLabelMutation = useMutation({
+    mutationFn: async (labelName: string) => {
+      await api.post(`/tasks/${id}/add_label`, { label_name: labelName });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task', id] });
+      setNewLabel('');
+      setShowLabelInput(false);
+      toast.success('Label added');
+    },
+    onError: () => {
+      toast.error('Failed to add label');
+    }
+  });
+
+  const removeLabelMutation = useMutation({
+    mutationFn: async (labelId: number) => {
+      await api.delete(`/tasks/${id}/labels/${labelId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task', id] });
+      toast.success('Label removed');
+    },
+    onError: () => {
+      toast.error('Failed to remove label');
     }
   });
 
@@ -75,6 +119,16 @@ const TaskDetailPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateMutation.mutate({ title, description, status, due_date: dueDate });
+  };
+
+  const handleAddLabel = () => {
+    if (newLabel.trim()) {
+      addLabelMutation.mutate(newLabel.trim());
+    }
+  };
+
+  const handleRemoveLabel = (labelId: number) => {
+    removeLabelMutation.mutate(labelId);
   };
 
   const handleDelete = () => {
@@ -153,6 +207,43 @@ const TaskDetailPage = () => {
               />
             </div>
 
+            <div className="form-group">
+              <label>Labels</label>
+              <div className="labels-container">
+                {task.labels.map(label => (
+                  <Chip
+                    key={label.id}
+                    label={'#' + label.name}
+                    onDelete={() => handleRemoveLabel(label.id)}
+                    style={{ backgroundColor: label.color || '#ccc', color: 'black', marginRight: '5px', marginBottom: '5px' }}
+                  />
+                ))}
+                {showLabelInput ? (
+                  <div className="add-label-input-group">
+                    <input
+                      type="text"
+                      value={newLabel}
+                      onChange={(e) => setNewLabel(e.target.value)}
+                      placeholder="New label..."
+                      className="add-label-input"
+                      autoFocus
+                    />
+                    <button type="button" onClick={handleAddLabel} className="confirm-add-label-btn">
+                      <Check size={18} />
+                    </button>
+                    <button type="button" onClick={() => { setShowLabelInput(false); setNewLabel(''); }} className="cancel-add-label-btn">
+                      <X size={18} />
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowLabelInput(true)} className="add-label-btn">
+                    <Plus size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+            
+
             <div className="form-actions">
               <button type="button" onClick={() => setIsEditing(false)} className="cancel-btn">
                 Cancel
@@ -179,6 +270,18 @@ const TaskDetailPage = () => {
             <div className="view-description">
               <h3>Description</h3>
               <p>{task.description || 'No description provided.'}</p>
+            </div>
+
+            <div className="view-labels">
+              <div className="labels-list">
+                {task.labels.map(label => (
+                  <Chip
+                    key={label.id}
+                    label={'#' + label.name}
+                    style={{ fontSize: 14, backgroundColor: label.color || '#ccc', color: 'black', marginRight: '5px', marginBottom: '5px', padding: '8px 10px' }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}

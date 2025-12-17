@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from backend.Controller import TaskController
+from backend.Controller import TaskController, LabelController
 
 from fastapi.middleware.cors import CORSMiddleware
 from .Controller import UserController
@@ -24,3 +24,5 @@ app.add_middleware(
 app.include_router(UserController.router)
 
 app.include_router(TaskController.router)
+
+app.include_router(LabelController.router)
