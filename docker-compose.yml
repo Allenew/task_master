@@ -1,16 +1,22 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15-alpine
+  backend:
+    build: ./backend
+    container_name: task_master_backend
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data:/data
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=taskmaster
+      - DATABASE_URL=sqlite:////data/sql_app.db
     ports:
-      - "5432:5432"
+      - "8000:8000"
+    restart: always
 
-volumes:
-  postgres_data:
+  frontend:
+    build: ./frontend
+    container_name: task_master_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
