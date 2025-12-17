@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
-import { ArrowLeft, Save, Edit2, Trash2, Plus, X, Check } from 'lucide-react';
+import { ArrowLeft, Edit2, Plus, X, Check, Save } from 'lucide-react';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -277,7 +277,7 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
               <label>Progress: {progress}%</label>
               <Slider
                 value={progress}
-                onChange={(e, newValue) => setProgress(newValue as number)}
+                onChange={(_e, newValue) => setProgress(newValue as number)}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
                 step={1}

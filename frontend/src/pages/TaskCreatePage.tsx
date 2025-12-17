@@ -43,7 +43,7 @@ const TaskCreatePage = () => {
     setLabels(labels.filter(label => label !== labelToRemove));
   };
 
-  const handleProgressChange = (event: Event, newValue: number | number[]) => {
+  const handleProgressChange = (_event: Event, newValue: number | number[]) => {
     const val = newValue as number;
     setProgress(val);
     if (val === 0) setStatus('TODO');
