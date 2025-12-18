@@ -62,6 +62,11 @@ This document outlines planned improvements and features for the Task Master sys
     - [ ] Support formatting (bold, lists, headers) in Add/Edit Task forms.
     - [ ] Render rich text content securely in the task view.
 
+### 1.12 Style Isolation
+- [ ] **SCSS Integration**: Adopt SCSS for better style management.
+    - [ ] Use nesting to namespace styles (e.g., `.page-container { .header { ... } }`) to prevent CSS conflicts between pages.
+    - [ ] Refactor existing CSS files to SCSS modules or namespaced SCSS files.
+
 ## 2. Backend Technology & Optimization
 
 ### 2.1 Database Architecture

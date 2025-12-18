@@ -90,7 +90,7 @@
   font-weight: 600;
 }
 
-.status-badge {
+.task-table-container .status-badge {
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -98,17 +98,17 @@
   cursor: pointer;
 }
 
-.status-badge.todo {
+.task-table-container .status-badge.todo {
   background-color: #fff7e6;
   color: #ffb547;
 }
 
-.status-badge.doing {
+.task-table-container .status-badge.doing {
   background-color: #eef2ff;
   color: #4318ff;
 }
 
-.status-badge.done {
+.task-table-container .status-badge.done {
   background-color: #e6fff9;
   color: #05cd99;
 }
@@ -118,7 +118,7 @@
   gap: 10px;
 }
 
-.action-btn {
+.task-table-container .action-btn {
   width: 32px;
   height: 32px;
   padding: 0;
@@ -165,28 +165,31 @@
   cursor: pointer;
   transition: border-color 0.3s;
 }
-.custom-avatar-group {
+
+.task-table-container .custom-avatar-group {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.custom-avatar-group .MuiAvatar-root {
+.task-table-container .custom-avatar-group .MuiAvatar-root {
   margin-left: -8px;
   border: 2px solid white;
   transition: transform 0.2s;
 }
 
-.custom-avatar-group .MuiAvatar-root:first-child {
+.task-table-container .custom-avatar-group .MuiAvatar-root:first-child {
   margin-left: 0;
 }
 
-.custom-avatar-group .MuiAvatar-root:hover {
+.task-table-container .custom-avatar-group .MuiAvatar-root:hover {
   transform: translateY(-4px);
   z-index: 20;
 }
 
-.custom-avatar-group .avatar-owner {
+.task-table-container .custom-avatar-group .avatar-owner {
   border-color: #FFB547;
   z-index: 10;
+  background-color: #fefeff;
+  color: #FFC107;
 }

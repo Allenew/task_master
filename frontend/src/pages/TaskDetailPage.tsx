@@ -250,6 +250,7 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
 
       <div className="form-card">
         {isEditing ? (
+          // Edit Mode
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Task Title</label>
@@ -320,9 +321,9 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
                 >
                   {task.owner.first_name.charAt(0)}
                 </Avatar>
-                {task.participants.map(p => (
+                {task.participants.map((p, index) => (
                   <div key={p.id} className="participant-avatar-wrapper">
-                    <Avatar title={p.first_name}>
+                    <Avatar title={p.first_name} sx={{ zIndex: 19 - index }}>
                       {p.first_name.charAt(0)}
                     </Avatar>
                     {isOwner && (
@@ -414,7 +415,7 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
             </div>
           </form>
         ) : (
-          // Edit
+          // View Mode
           <div className="task-view">
             <div className="view-header">
               <span className={`status-badge ${task.status.toLowerCase()}`} style={{ fontSize: '14px', padding: '8px 16px' }}>
@@ -455,15 +456,21 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
 
             <div className="view-participants">
               <h3>Participants</h3>
-              <div className="custom-avatar-group">
+              <div className="custom-avatar-group" style={{ paddingLeft: '8px' }}>
                 <Avatar
                   className="avatar-owner"
                   title={task.owner.first_name + ' (Owner)'}
                 >
                   {task.owner.first_name.charAt(0)}
                 </Avatar>
-                {task.participants.map(p => (
-                  <Avatar key={p.id} title={p.first_name}>{p.first_name.charAt(0)}</Avatar>
+                {task.participants.map((p, index) => (
+                  <Avatar 
+                    key={p.id} 
+                    title={p.first_name}
+                    sx={{ zIndex: 19 - index }}
+                  >
+                    {p.first_name.charAt(0)}
+                  </Avatar>
                 ))}
               </div>
             </div>
