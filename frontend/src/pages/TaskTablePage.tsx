@@ -9,6 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Avatar from '@mui/material/Avatar';
+import Pagination from '@mui/material/Pagination';
 import CircularProgress, { CircularProgressProps } from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -32,6 +33,11 @@ interface Task {
   progress: number;
   owner: User;
   participants: User[];
+}
+
+interface TaskPagination {
+  tasks: Task[];
+  total: number;
 }
 
 function CircularProgressWithLabel(
@@ -78,26 +84,36 @@ function CircularProgressWithLabel(
 const TaskTablePage = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [filterStatus, setFilterStatus] = useState<string>('');
+  const [pageNum, setPageNum] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editingStatusId, setEditingStatusId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   const {
-    data: tasks,
+    data: paginationData,
     isLoading: tasksLoading,
     isError: tasksError,
     error: tasksErrorObj
-  } = useQuery<Task[]>({
-    queryKey: ['tasks', filterStatus],
+  } = useQuery<TaskPagination>({
+    queryKey: ['tasks', filterStatus, pageNum, pageSize],
     queryFn: async () => {
-      const params = filterStatus ? { status: filterStatus } : {};
+      const params: any = {
+        skip: (pageNum - 1) * pageSize,
+        limit: pageSize
+      };
+      if (filterStatus) {
+        params.status = filterStatus;
+      }
       const response = await api.get('/tasks/', { params });
       return response.data;
     },
     enabled: isAuthenticated && !authLoading,
     retry: false,
   });
+
+  const tasks = paginationData?.tasks || [];
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
@@ -167,7 +183,10 @@ const TaskTablePage = () => {
           <Filter size={16} />
           <select 
             value={filterStatus} 
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setPageNum(1);
+            }}
             className="status-filter"
           >
             <option value="">All Statuses</option>
@@ -201,19 +220,27 @@ const TaskTablePage = () => {
                      <Avatar
                         className="avatar-owner"
                         title={task.owner.first_name + ' (Owner)'}
-                        sx={{ width: 30, height: 30, fontSize: 14, backgroundColor: '#fefeffff', color: '#FFC107' }}
+                        sx={{ width: 30, height: 30, fontSize: 14 }}
                       >
                         {task.owner.first_name.charAt(0)}
                       </Avatar>
-                      {task.participants.map(p => (
+                      {task.participants.slice(0, 2).map((p, index) => (
                         <Avatar 
                           key={p.id} 
                           title={p.first_name}
-                          sx={{ width: 30, height: 30, fontSize: 14 }}
+                          sx={{ width: 30, height: 30, fontSize: 14, zIndex: 9 - index }}
                         >
                           {p.first_name.charAt(0)}
                         </Avatar>
                       ))}
+                      {task.participants.length > 2 && (
+                        <Avatar 
+                          title={`${task.participants.length - 2} more participants`}
+                          sx={{ width: 30, height: 30, fontSize: 14, backgroundColor: '#f4f7fe', color: '#a3aed0', zIndex: 7 }}
+                        >
+                          ...
+                        </Avatar>
+                      )}
                   </div>
                 </td>
 
@@ -235,8 +262,10 @@ const TaskTablePage = () => {
                       className={`status-badge ${task.status.toLowerCase()}`}
                       onClick={() => setEditingStatusId(task.id)}
                       title="Click to switch status"
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px', width: 'fit-content', cursor: 'pointer' }}
                     >
                       {task.status}
+                      <Edit size={12} />
                     </span>
                   )}
                 </td>
@@ -269,6 +298,29 @@ const TaskTablePage = () => {
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="pagination-container" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        <Pagination 
+          variant="outlined"
+          count={Math.ceil((paginationData?.total || 0) / pageSize)} 
+          page={pageNum} 
+          onChange={(_event, value) => setPageNum(value)} 
+          shape="circular"
+          sx={{
+            '& .MuiPaginationItem-root.Mui-selected': {
+              backgroundColor: '#ffb547',
+              color: '#fff',
+              borderColor: '#ffb547',
+              '&:hover': {
+                backgroundColor: '#e6a33f',
+              },
+              '&:focus': {
+                backgroundColor: '#e6a33f',
+              },
+            },
+          }}
+        />
       </div>
 
       <Dialog open={confirmOpen} onClose={handleCancelDelete}>

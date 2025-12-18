@@ -112,7 +112,10 @@ def test_read_tasks():
     response = client.get("/tasks/", headers=headers)
     assert response.status_code == 200
     data = response.json()
-    assert len(data) >= 1
+    assert "tasks" in data
+    assert "total" in data
+    assert len(data["tasks"]) >= 1
+    assert data["total"] >= 1
 
 def test_update_task():
     task_id, headers = create_task_helper()

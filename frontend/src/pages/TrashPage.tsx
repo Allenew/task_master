@@ -33,7 +33,7 @@ const TrashPage = () => {
   } = useQuery<Task[]>({
     queryKey: ['trash-tasks'],
     queryFn: async () => {
-      const response = await api.get('/tasks/', { params: { is_active: false } });
+      const response = await api.get('/tasks/all', { params: { is_active: false } });
       return response.data;
     },
     enabled: isAuthenticated && !authLoading,

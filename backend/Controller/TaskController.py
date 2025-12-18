@@ -19,7 +19,7 @@ def create_task(
 ):
     return taskService.create_task(db=db, task=task, user_id=current_user.id)
 
-@router.get("/", response_model=list[schemas.Task])
+@router.get("/", response_model=schemas.TaskPagination)
 def read_tasks(
     skip: int = 0, 
     limit: int = 100, 
@@ -29,6 +29,14 @@ def read_tasks(
     current_user: schemas.User = Depends(authService.get_current_user)
 ):
     return taskService.get_tasks(db, user_id=current_user.id, skip=skip, limit=limit, status=status, is_active=is_active)
+
+@router.get("/all", response_model=list[schemas.Task])
+def read_all_tasks(
+    is_active: bool = True,
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(authService.get_current_user)
+):
+    return taskService.get_all_user_tasks(db, user_id=current_user.id, is_active=is_active)
 
 @router.get("/{task_id}", response_model=schemas.Task)
 def read_task(

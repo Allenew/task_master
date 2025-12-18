@@ -25,10 +25,19 @@ def get_tasks(db: Session, user_id: int, skip: int = 0, limit: int = 100, status
         query = query.filter(models.Task.is_active == is_active)
     if status:
         query = query.filter(models.Task.status == status)
-    return query.offset(skip).limit(limit).all()
+    
+    total = query.count()
+    tasks = query.offset(skip).limit(limit).all()
+    return {"tasks": tasks, "total": total}
 
-def get_all_tasks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Task).offset(skip).limit(limit).all()
+def get_all_user_tasks(db: Session, user_id: int, is_active: bool = True):
+    return db.query(models.Task).outerjoin(models.task_participants).filter(
+        or_(
+            models.Task.user_id == user_id,
+            models.task_participants.c.user_id == user_id
+        ),
+        models.Task.is_active == is_active
+    ).distinct().all()
 
 def create_task(db: Session, task: schemas.TaskCreate, user_id: int):
     task_data = task.model_dump()

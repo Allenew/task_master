@@ -85,3 +85,7 @@ class Task(TaskBase):
 
     class Config:
         orm_mode = True
+
+class TaskPagination(BaseModel):
+    tasks: List[Task]
+    total: int

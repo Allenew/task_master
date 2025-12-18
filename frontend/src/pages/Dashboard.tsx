@@ -28,9 +28,9 @@ const Dashboard = () => {
     data: tasks,
     isLoading: tasksLoading  
   } = useQuery<Task[]>({
-    queryKey: ['tasks'],
+    queryKey: ['tasks-all'],
     queryFn: async () => {
-      const response = await api.get('/tasks/');
+      const response = await api.get('/tasks/all');
       return response.data;
     },
     enabled: isAuthenticated && !authLoading,
