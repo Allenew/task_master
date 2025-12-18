@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -22,13 +22,34 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Run Tests
+      - name: Run Backend Tests
         run: |
           cd backend
           pytest
 
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Run Component Tests
+        run: |
+          cd frontend
+          npm run test:component
+
   deploy:
-    needs: test
+    needs: [test-backend, test-frontend]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
