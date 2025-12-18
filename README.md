@@ -7,6 +7,8 @@ A full-stack TODO List management app with a modern UI and robust backend.
 - **Backend**: Python, FastAPI, SQLAlchemy, SQLite, Alembic (Migrations), JWT Auth
 - **Frontend**: React, Vite, TypeScript, TanStack Query, React Router, Recharts
 - **Styling**: CSS Modules (MUI & Lucide React) / Custom CSS
+- **Test**: Pytest, Cypress
+- **Deploy**: Github Actions, AWS
 
 ## Features
 
@@ -134,4 +136,18 @@ A full-stack TODO List management app with a modern UI and robust backend.
 ```bash
 cd backend
 pytest
+```
+
+### Frontend Tests
+
+Run component tests headlessly:
+```bash
+cd frontend
+npm run test:component
+```
+
+Open Cypress for interactive testing:
+```bash
+cd frontend
+npm run cy:open
 ```
