@@ -10,6 +10,19 @@ A full-stack TODO List management app with a modern UI and robust backend.
 - **Test**: Pytest, Cypress
 - **Deploy**: Github Actions, AWS
 
+## Previews
+### Task Dashboard
+<img src="https://drive.google.com/uc?export=view&id=1iIVSg6P8N7rijccmhyjktxc3GgzUDljZ" alt="Task Dashboard" width="800" />
+
+### Task lists
+<img src="https://drive.google.com/file/d/1xNjx4NbqK8jyJNPCenOgPgLz2W_Ej_na/view?usp=sharing" alt="Task List" width="800" />
+
+### Task Detail
+<img src="https://drive.google.com/file/d/1-VuUly8-rENQF5-iqw_-4A354brtC1sq/view?usp=sharing" alt="Task Detail" width="800" />
+
+### Task Edit
+<img src="https://drive.google.com/file/d/11LyN7ebiP1mjFMIzkvYcnQISVR1HWyaH/view?usp=sharing" alt="Task Edit" width="800" />
+
 ## Features
 
 - **Authentication**: User registration and login with JWT.
