@@ -85,7 +85,7 @@ const TaskTablePage = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [pageNum, setPageNum] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editingStatusId, setEditingStatusId] = useState<number | null>(null);
