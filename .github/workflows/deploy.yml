@@ -67,6 +67,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: ENV_FILE
           script: |
+            # Stop script on first error
+            set -e
+
             # Add /usr/local/bin to PATH for this session
             export PATH=$PATH:/usr/local/bin
             
