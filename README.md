@@ -12,7 +12,7 @@ A full-stack TODO List management app with a modern UI and robust backend.
 
 ## Previews
 ### Task Dashboard
-<img src="https://drive.google.com/uc?export=view&id=1-VuUly8-rENQF5-iqw_-4A354brtC1sq" alt="Task Dashboard" width="800" />
+<img src="https://drive.google.com/uc?export=view&id=1iIVSg6P8N7rijccmhyjktxc3GgzUDljZ" alt="Task Dashboard" width="800" />
 
 ### Task lists
 <img src="https://drive.google.com/uc?export=view&id=1xNjx4NbqK8jyJNPCenOgPgLz2W_Ej_na" alt="Task List" width="800" />
