@@ -8,6 +8,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Chip from '@mui/material/Chip';
 import Slider from '@mui/material/Slider';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import './TaskForm.css';
 
 const TaskCreatePage = () => {
@@ -108,11 +110,11 @@ const TaskCreatePage = () => {
 
           <div className="form-group">
             <label>Description</label>
-            <textarea 
+            <ReactQuill
+              theme="snow"
               value={description} 
-              onChange={(e) => setDescription(e.target.value)} 
-              rows={6}
-              placeholder="Enter task description..."
+              onChange={setDescription} 
+              placeholder="Enter task description..." 
             />
           </div>
 
