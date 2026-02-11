@@ -19,6 +19,9 @@ import { useAuth } from '../context/AuthContext'; // Add this import
 
 import './TaskDetail.css';
 import './TaskForm.css'; // Reuse form styles
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 
 interface User {
   id: number;
@@ -305,10 +308,11 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
 
             <div className="form-group">
               <label>Description</label>
-              <textarea 
+              <ReactQuill
+                theme="snow"
                 value={description} 
-                onChange={(e) => setDescription(e.target.value)} 
-                rows={6}
+                onChange={setDescription} 
+                placeholder="Enter task description..." 
               />
             </div>
 
@@ -451,7 +455,9 @@ const TaskDetailPage = ({ isEditingByDefault = false }: TaskDetailPageProps) => 
             </div>
             <div className="view-description">
               <h3>Description</h3>
-              <p>{task.description || 'No description provided.'}</p>
+              <div
+                className="description-content"
+                dangerouslySetInnerHTML={{ __html: task.description || '<p>No description provided.</p>' }} />
             </div>
 
             <div className="view-participants">

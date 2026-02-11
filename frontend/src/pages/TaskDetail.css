@@ -76,6 +76,15 @@
   margin-bottom: 5px;
 }
 
+.task-form-container .description-content {
+  margin-top: 20px;
+  background-color: #fcfcf9d3;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #dfe3ea;
+  color: var(--color-text-main);
+}
+
 .task-form-container .status-badge {
   padding: 5px 12px;
   border-radius: 20px;
