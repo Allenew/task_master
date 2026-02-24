@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -21,7 +21,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/token", response_model=schemas.Token)
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = userService.get_user_by_email(db, email=form_data.username)
     if not user or not authService.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -33,6 +33,17 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     access_token = authService.create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
+    print("===> Generated access token:", access_token)  # Debugging statement to check the generated token
+
+    # Set the cookie in the response
+    response.set_cookie(
+        key="token",
+        value=access_token,
+        httponly=False,  # let client-side JavaScript access the cookie for authentication
+        secure=False,    # now is using http
+        samesite="Lax" # Prevent CSRF in most cases
+    )
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/me", response_model=schemas.User)

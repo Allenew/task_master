@@ -45,7 +45,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = (token: string) => {
-    setCookie('token', token);
+    // setCookie('token', token);
+    // console.log("Get token cookie:", token);
     fetchUser();
   };
 
